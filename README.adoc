@@ -1,0 +1,57 @@
+= Java threading optimizer bug demo
+
+== Problem
+
+Adding multiple identical things inside a busy loop causes performance and CPU usage to plummet. Using -Xint increases performance significantly in such case but also increases CPU usage.
+
+
+=== Usage
+First start the server:
+----
+$ java -Daction=server -jar target/javabug-0.0.1-jar-with-dependencies.jar
+----
+
+==== msgCount=2
+----
+$ java -Daction=spam -DmsgCount=2 -jar target/javabug-0.0.1-jar-with-dependencies.jar
+[main] INFO com.example.javabug.JavaBug - Target is 127.0.0.1:1601 with 20 threads and 2 messages per batch
+Events sent: 30118, total 30118 in 1s (30118 eps)
+Events sent: 140546, total 170668 in 2s (85332 eps)
+Events sent: 165062, total 335726 in 3s (111908 eps)
+Events sent: 165964, total 501694 in 4s (125422 eps)
+Events sent: 166208, total 667904 in 5s (133579 eps)
+----
+
+==== msgCount=2 and interpreted mode
+----
+$ java -Xint -Daction=spam -DmsgCount=2 -jar target/javabug-0.0.1-jar-with-dependencies.jar 
+[main] INFO com.example.javabug.JavaBug - Target is 127.0.0.1:1601 with 20 threads and 2 messages per batch
+Events sent: 25326, total 25326 in 1s (25326 eps)
+Events sent: 28160, total 53486 in 2s (26743 eps)
+Events sent: 29366, total 82852 in 3s (27617 eps)
+Events sent: 28964, total 111816 in 4s (27954 eps)
+Events sent: 29856, total 141672 in 5s (28334 eps)
+----
+
+==== msgCount=3
+----
+$ java -Daction=spam -DmsgCount=3 -jar target/javabug-0.0.1-jar-with-dependencies.jar
+[main] INFO com.example.javabug.JavaBug - Target is 127.0.0.1:1601 with 20 threads and 3 messages per batch
+Events sent: 3255, total 3255 in 1s (3255 eps)
+Events sent: 1461, total 4716 in 2s (2358 eps)
+Events sent: 1464, total 6180 in 3s (2060 eps)
+Events sent: 1461, total 7641 in 4s (1910 eps)
+Events sent: 1455, total 9096 in 5s (1819 eps)
+Events sent: 1461, total 10557 in 6s (1759 eps)
+----
+
+==== msgCount=3 and interpreted mode
+----
+$ java -Xint -Daction=spam -DmsgCount=3 -jar target/javabug-0.0.1-jar-with-dependencies.jar
+[main] INFO com.example.javabug.JavaBug - Target is 127.0.0.1:1601 with 20 threads and 3 messages per batch
+Events sent: 24876, total 24876 in 1s (24876 eps)
+Events sent: 27966, total 52842 in 2s (26421 eps)
+Events sent: 25554, total 78396 in 3s (26132 eps)
+Events sent: 22275, total 100671 in 4s (25167 eps)
+Events sent: 22497, total 123168 in 5s (24633 eps)
+----
