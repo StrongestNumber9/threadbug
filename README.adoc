@@ -8,10 +8,12 @@ Adding multiple identical things inside a busy loop causes performance and CPU u
 === Usage
 Download the pre-built jar from GitHub or run `mvn clean package` yourself.
 
-First start the server:
+First start the server process:
 ----
 $ java -Daction=server -jar target/javabug-0.0.1-jar-with-dependencies.jar
 ----
+
+Server is expected to stay on the foreground and it must be left on to demonstrate this issue. It won't terminate on its own. Run the following client commands on separate terminal while server is running.
 
 ==== msgCount=2
 ----
